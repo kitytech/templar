@@ -1,5 +1,5 @@
 # templar
-"TEMPLate ARchive"
+"TEMPLated ARchiver"
 
 A(-n experimental) data serialization library using templates and restricted to c++11.  Because I'm masochistic (and also coding on embedded systems that ship with old standard libraries).
 
