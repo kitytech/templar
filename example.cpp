@@ -55,7 +55,7 @@ int main()
       , MAX
       };
 
-  using protocol_t = pc::protocol<MessageType>;
+  using protocol_t = tpl::protocol<MessageType>;
   using protocol_definition = protocol_t::definition
     < protocol_t::Message<MessageType::SomeText, std::string>
     , protocol_t::Message<MessageType::DrawLine, short, int, long, uint8_t>
