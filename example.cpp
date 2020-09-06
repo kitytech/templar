@@ -66,6 +66,7 @@ int main()
   using protocol_visitor = protocol_t::visitor;
   protocol_t protocol;
 
+  auto message_1 = protocol.make_message<MessageType::Crap1>("Isn't this something else?");
   auto message_1 = protocol.make_message<MessageType::SomeText>("Isn't this something else?");
   auto message_2 = protocol.make_message<MessageType::DrawLine>(0, 1, 2, 3);
   auto message_3 = protocol.make_message<MessageType::IsTrue>(true);
