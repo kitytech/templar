@@ -231,22 +231,10 @@ namespace tpl
         {
           return std::get<I>(fields_);
         }
-      template<message_type_enum E>
-        auto get() const -> decltype(this->get<static_cast<size_t>(E)>(this->fields_))
-        {
-          static_assert(std::is_reference<decltype(this->get<static_cast<size_t>(E)>(fields_))>::value, "");
-          return this->get<static_cast<size_t>(E)>(fields_);
-        }
       template<size_t I>
         auto get() -> decltype(std::get<I>(this->fields_))
         {
           return std::get<I>(fields_);
-        }
-      template<message_type_enum E>
-        auto get() -> decltype(this->get<static_cast<size_t>(E)>(this->fields_))
-        {
-          static_assert(std::is_reference<decltype(this->get<static_cast<size_t>(E)>(fields_))>::value, "");
-          return this->get<static_cast<size_t>(E)>(fields_);
         }
     private:
       auto serialize_message_type_id(cpp::string& s) const -> void
