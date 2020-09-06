@@ -274,11 +274,6 @@ namespace tpl
       using visitor = detail::protocol_visitor<0, message_tuple>;
     };
     
-    template<typename...MessageTs>
-      auto define() -> definition<MessageTs...>
-      {
-        return definition<MessageTs...>{};
-      }
   };
 } /* namespace pt */
 #endif//protocol_hpp_20200903_133809_PDT
