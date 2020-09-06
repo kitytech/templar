@@ -55,18 +55,18 @@ int main()
       , MAX
       };
 
-  using protocol_t = tpl::protocol<MessageType>;
-  using protocol_definition = protocol_t::definition
-    < protocol_t::Message<MessageType::SomeText, std::string>
-    , protocol_t::Message<MessageType::DrawLine, short, int, long, uint8_t>
-    , protocol_t::Message<MessageType::IsTrue,   bool>
-    , protocol_t::Message<MessageType::GoldenTurd, std::string, bool>
+  using protocol_class = tpl::protocol<MessageType>;
+  using protocol_t = protocol_class::definition
+    < protocol_class::Message<MessageType::SomeText, std::string>
+    , protocol_class::Message<MessageType::DrawLine, short, int, long, uint8_t>
+    , protocol_class::Message<MessageType::IsTrue,   bool>
+    , protocol_class::Message<MessageType::GoldenTurd, std::string, bool>
     >;
 
-  using protocol_visitor = protocol_definition::visitor;
-  protocol_definition protocol;
+  using protocol_visitor = protocol_t::visitor;
+  protocol_t protocol;
 
-  auto message_1 = protocol.make_message<MessageType::SomeText>("\001\002\003\004");
+  auto message_1 = protocol.make_message<MessageType::SomeText>("Isn't this something else?");
   auto message_2 = protocol.make_message<MessageType::DrawLine>(0, 1, 2, 3);
   auto message_3 = protocol.make_message<MessageType::IsTrue>(true);
   auto message_4 = protocol.make_message<MessageType::GoldenTurd>("Vincent Thacker", true);
@@ -88,10 +88,10 @@ int main()
 
   class A final : public protocol_visitor
   {
-    using message_1_type = protocol_t::Message<MessageType::SomeText, std::string>;
-    using message_2_type = protocol_t::Message<MessageType::DrawLine, short, int, long, uint8_t>;
-    using message_3_type = protocol_t::Message<MessageType::IsTrue,   bool>;
-    using message_4_type = protocol_t::Message<MessageType::GoldenTurd, std::string, bool>;
+    using message_1_type = protocol_class::Message<MessageType::SomeText, std::string>;
+    using message_2_type = protocol_class::Message<MessageType::DrawLine, short, int, long, uint8_t>;
+    using message_3_type = protocol_class::Message<MessageType::IsTrue,   bool>;
+    using message_4_type = protocol_class::Message<MessageType::GoldenTurd, std::string, bool>;
   public:
     A
     ( message_1_type& m1
@@ -110,22 +110,29 @@ int main()
     message_3_type& message_3_ref_;
     message_4_type& message_4_ref_;
 
-    virtual auto visit(const protocol_t::Message<MessageType::SomeText, std::string>& arg) -> void override 
+    virtual auto visit(const protocol_t::message<MessageType::SomeText>& arg) -> void override 
       {
         auto s = arg.serialize();
         cout << s.size() << ": "; print_hex(s); cout << "\n";
+        cout << "SomeText:\t\"" << arg.get<0>() << "\"\n";
       }
-    virtual auto visit(const protocol_t::Message<MessageType::DrawLine, short, int, long, uint8_t>& arg) -> void override 
+    virtual auto visit(const protocol_t::message<MessageType::DrawLine>& arg) -> void override 
       {
         auto s = arg.serialize();
         cout << s.size() << ": "; print_hex(s); cout << "\n";
+        cout << "DrawLine:\t" << static_cast<int>(arg.get<0>())
+             << ", "          << static_cast<int>(arg.get<1>())
+             << ", "          << static_cast<int>(arg.get<2>())
+             << ", "          << static_cast<int>(arg.get<3>())
+             << "\n";
       }
-    virtual auto visit(const protocol_t::Message<MessageType::IsTrue,   bool>& arg) -> void override 
+    virtual auto visit(const protocol_t::message<MessageType::IsTrue>& arg) -> void override 
       {
         auto s = arg.serialize();
         cout << s.size() << ": "; print_hex(s); cout << "\n";
+        cout << "IsTrue:\t" << arg.get<0>() << "\n";
       }
-    virtual auto visit(const protocol_t::Message<MessageType::GoldenTurd, std::string, bool>& arg) -> void override
+    virtual auto visit(const protocol_t::message<MessageType::GoldenTurd>& arg) -> void override
       {
         auto s = arg.serialize();
         cout << s.size() << ": "; print_hex(s); cout << "\n";

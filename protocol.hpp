@@ -222,9 +222,33 @@ namespace tpl
         }
       auto operator==(const Message& other) const -> bool { return is_equal_to(other); }
       auto fields() const -> const field_tuple_type& { return fields_; }
+
     private:
       field_tuple_type fields_;
-      
+    public:
+      template<size_t I>
+        auto get() const -> decltype(std::get<I>(this->fields_))
+        {
+          return std::get<I>(fields_);
+        }
+      template<message_type_enum E>
+        auto get() const -> decltype(this->get<static_cast<size_t>(E)>(this->fields_))
+        {
+          static_assert(std::is_reference<decltype(this->get<static_cast<size_t>(E)>(fields_))>::value, "");
+          return this->get<static_cast<size_t>(E)>(fields_);
+        }
+      template<size_t I>
+        auto get() -> decltype(std::get<I>(this->fields_))
+        {
+          return std::get<I>(fields_);
+        }
+      template<message_type_enum E>
+        auto get() -> decltype(this->get<static_cast<size_t>(E)>(this->fields_))
+        {
+          static_assert(std::is_reference<decltype(this->get<static_cast<size_t>(E)>(fields_))>::value, "");
+          return this->get<static_cast<size_t>(E)>(fields_);
+        }
+    private:
       auto serialize_message_type_id(cpp::string& s) const -> void
         {
           Field<char>::serialize(s, static_cast<char>(message_type_id()));
@@ -245,6 +269,8 @@ namespace tpl
       using message_tuple_type = cpp::tuple<MessageTs...>;
       using message_type_enum = ET;
     public:
+      template<message_type_enum E>
+        using message = detail::matching_message_type_from<static_cast<size_t>(E), message_tuple_type>;
       template<message_type_enum MT_ID, typename...ArgTs>
       auto make_message(ArgTs&&...args) -> detail::matching_message_type_from<static_cast<size_t>(MT_ID), message_tuple_type>
         {

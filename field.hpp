@@ -96,7 +96,7 @@ public:
   static auto deserialize(string_iter& begin, const string_iter& end) -> cpp::string
     {
       auto size = Field<cpp::string::size_type>::deserialize(begin, end);
-      if(end - begin > size)
+      if(end - begin < size)
       {
         throw std::length_error("encoded string length greater than remaining stream length");
       }
