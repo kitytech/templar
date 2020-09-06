@@ -254,19 +254,19 @@ namespace tpl
     template<typename...MessageTs>
     class definition 
     {
-      using message_tuple_type = cpp::tuple<MessageTs...>;
+      using message_tuple = cpp::tuple<MessageTs...>;
       using message_id_type = ET;
     public:
       template<message_id_type E>
-        using message = detail::matching_message_type_from<static_cast<size_t>(E), message_tuple_type>;
+        using message = detail::matching_message_type_from<static_cast<size_t>(E), message_tuple>;
       template<message_id_type MT_ID, typename...ArgTs>
-      auto make_message(ArgTs&&...args) -> detail::matching_message_type_from<static_cast<size_t>(MT_ID), message_tuple_type>
+      auto make_message(ArgTs&&...args) -> detail::matching_message_type_from<static_cast<size_t>(MT_ID), message_tuple>
         {
-          using message_type = detail::matching_message_type_from<static_cast<size_t>(MT_ID), message_tuple_type>;
+          using message_type = detail::matching_message_type_from<static_cast<size_t>(MT_ID), message_tuple>;
           typename message_type::field_tuple_type fields(cpp::forward<ArgTs>(args)...);
           return message_type { cpp::move(fields) };
         }
-      using visitor = detail::protocol_visitor<0, message_tuple_type>;
+      using visitor = detail::protocol_visitor<0, message_tuple>;
     };
   
   };
