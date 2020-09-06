@@ -66,7 +66,8 @@ int main()
   using protocol_visitor = protocol_t::visitor;
 
   protocol_t protocol;
-  auto message_1 = protocol.make_message<MessageType::SomeText>("Isn't this something else?");
+  std::string something = "Isn't this something else?";
+  auto message_1 = protocol.make_message<MessageType::SomeText>(something);
   auto message_2 = protocol.make_message<MessageType::DrawLine>(0, 1, 2, 3);
   auto message_3 = protocol.make_message<MessageType::IsTrue>(true);
   auto message_4 = protocol.make_message<MessageType::GoldenTurd>("Vincent Thacker", true);
@@ -88,10 +89,10 @@ int main()
 
   class A final : public protocol_visitor
   {
-    using message_1_type = protocol_class::Message<MessageType::SomeText, std::string>;
-    using message_2_type = protocol_class::Message<MessageType::DrawLine, short, int, long, uint8_t>;
-    using message_3_type = protocol_class::Message<MessageType::IsTrue,   bool>;
-    using message_4_type = protocol_class::Message<MessageType::GoldenTurd, std::string, bool>;
+    using message_1_type = protocol_t::message<MessageType::SomeText>;
+    using message_2_type = protocol_t::message<MessageType::DrawLine>;
+    using message_3_type = protocol_t::message<MessageType::IsTrue>;
+    using message_4_type = protocol_t::message<MessageType::GoldenTurd>;
   public:
     A
     ( message_1_type& m1
