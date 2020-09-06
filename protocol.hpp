@@ -194,16 +194,16 @@ namespace tpl
   template<typename ET>
   class protocol
   {
-    using message_type_enum = ET;
+    using message_id_type = ET;
   public:
-    template<message_type_enum MessageTypeID, typename...MessageFieldTypes>
+    template<message_id_type MessageTypeID, typename...MessageFieldTypes>
     class Message
     {
     public:
-      using message_type_enum = ET;
+      using message_id_type = ET;
       using field_tuple_type  = cpp::tuple<MessageFieldTypes...>;
       using char_type         = cpp::string::value_type;
-      static constexpr message_type_enum message_type_id() { return MessageTypeID; }
+      static constexpr message_id_type message_type_id() { return MessageTypeID; }
       static_assert(static_cast<size_t>(message_type_id()) < cpp::numeric_limits<char_type>::max(), "Message ID value too large for storage in type 'char'");
       explicit Message(field_tuple_type&& ft) 
       : fields_(cpp::move(ft))
@@ -255,11 +255,11 @@ namespace tpl
     class definition 
     {
       using message_tuple_type = cpp::tuple<MessageTs...>;
-      using message_type_enum = ET;
+      using message_id_type = ET;
     public:
-      template<message_type_enum E>
+      template<message_id_type E>
         using message = detail::matching_message_type_from<static_cast<size_t>(E), message_tuple_type>;
-      template<message_type_enum MT_ID, typename...ArgTs>
+      template<message_id_type MT_ID, typename...ArgTs>
       auto make_message(ArgTs&&...args) -> detail::matching_message_type_from<static_cast<size_t>(MT_ID), message_tuple_type>
         {
           using message_type = detail::matching_message_type_from<static_cast<size_t>(MT_ID), message_tuple_type>;
