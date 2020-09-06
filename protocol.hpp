@@ -49,6 +49,11 @@ namespace tpl
       {
         struct invalid
         {
+        /*
+         * Getting an error here means you tried to access a message type using an invalid message ID,
+         * e.g. an value that exists in an enumerator definition but wasn't supplied to the Protocol class.
+         */
+        private:
           invalid()               = delete;
           invalid(const invalid&) = delete;
           invalid(invalid&&)      = delete;
