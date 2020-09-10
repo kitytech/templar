@@ -196,6 +196,13 @@ namespace tpl
         virtual auto visit(const message_type&) -> void = 0;
       };
   } /* namespace detail */
+
+  /*!
+   * \brief Encapsulates the Message
+   *        
+   *
+   * This 
+   */
   template<typename ET>
   class protocol
   {

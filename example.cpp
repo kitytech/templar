@@ -58,6 +58,7 @@ int main()
   using protocol_class = tpl::protocol<MessageType>;
   using protocol_t = protocol_class::definition
     < protocol_class::Message<MessageType::SomeText, std::string>
+    //, protocol_class::Message<MessageType::DrawLine, short, int, unsigned, long>
     , protocol_class::Message<MessageType::DrawLine, short, int, long, uint8_t>
     , protocol_class::Message<MessageType::IsTrue,   bool>
     , protocol_class::Message<MessageType::GoldenTurd, std::string, bool>
@@ -68,8 +69,9 @@ int main()
   protocol_t protocol;
   std::string something = "Isn't this something else?";
   auto message_1 = protocol.make_message<MessageType::SomeText>(something);
-  auto message_2 = protocol.make_message<MessageType::DrawLine>(0, 1, 2, 3);
-  auto message_3 = protocol.make_message<MessageType::IsTrue>(true);
+  auto message_2 = protocol.make_message<MessageType::DrawLine>(32000, 1111, 2223, 0x41);
+  bool is_true = false;
+  auto message_3 = protocol.make_message<MessageType::IsTrue>(is_true);
   auto message_4 = protocol.make_message<MessageType::GoldenTurd>("Vincent Thacker", true);
 
   auto stream_1 = message_1.serialize();
@@ -121,10 +123,10 @@ int main()
       {
         auto s = arg.serialize();
         cout << s.size() << ": "; print_hex(s); cout << "\n";
-        cout << "DrawLine:\t" << static_cast<int>(arg.get<0>())
-             << ", "          << static_cast<int>(arg.get<1>())
-             << ", "          << static_cast<int>(arg.get<2>())
-             << ", "          << static_cast<int>(arg.get<3>())
+        cout << "DrawLine:\t" << arg.get<0>()
+             << ", "          << arg.get<1>()
+             << ", "          << arg.get<2>()
+             << ", "          << arg.get<3>()
              << "\n";
       }
     virtual auto visit(const protocol_t::message<MessageType::IsTrue>& arg) -> void override 
