@@ -12,6 +12,9 @@
 namespace tpl
 {
 
+/*********************************************************************************************************************
+* Implementation of `MessageSerializer` class, which packs the data from a `Message` into a string.
+*********************************************************************************************************************/
   namespace detail {
 
     template<size_t IDX, typename TupleT, typename EnableT = void>
@@ -38,7 +41,21 @@ namespace tpl
           MessageSerializer<IDX + 1, TupleT>::serialize(s, t);
         }
     };
-
+  } // namespace detail
+/*********************************************************************************************************************
+* Metafunction for retrieving a `Message` whose definition is stored in a tuple.
+*
+* Explanation: If the tuple were constructed in such a way that the `Message` classes were sorted in numerical order
+* according to their associated IDs, then we could just use `std::get` to access the stored class.  Since there is
+* no guarantee that IDs are sorted, or that even all IDs which are provided by the underlying `enum` even exist as
+* `Message` definitions, we need a way to (at compile-time) iterate through the tuple in search of the matching ID.
+*
+* Since this is a compile-time rather than run-time search, there is no performance penalty for the ID lookup.
+*
+* Note: This class is actually not bound to `Message` objects, per se, but can be used for any tuple which stores
+* tuples of arbitrary type in another tuple, to be accessed by a `size_t` index.
+*********************************************************************************************************************/
+  namespace detail {
     namespace impl
     {
       template<size_t ID, size_t IndexN, typename T, typename En = void>
@@ -59,7 +76,6 @@ namespace tpl
           invalid(invalid&&)      = delete;
         };
       public:
-        //static_assert(false, "ID not found in tuple T");
         using type = invalid;
       };
 
@@ -69,12 +85,18 @@ namespace tpl
         using type_at_index = cpp::tuple_element_t<IndexN, T>;
       public:
         using type = typename cpp::conditional<ID == static_cast<size_t>(type_at_index::message_type_id()), type_at_index, typename matching_message_type_from<ID, IndexN + 1, T>::type>::type;
-        //using type = int;
       };
     } // namespace impl
+
     template<size_t ID, typename TupleT>
       using matching_message_type_from = typename impl::matching_message_type_from<ID, 0, TupleT>::type;
 
+  }// namespace detail
+/*********************************************************************************************************************
+* Implementation of `MessageDeserializer` class, which unpacks the data from a string into a `Message` object.
+*********************************************************************************************************************/
+  namespace detail {
+    
       template<size_t I, typename T, typename EnableT = void>
       class MessageDeserializer;
 
@@ -124,6 +146,12 @@ namespace tpl
           }
       };
 
+  } /* namespace detail */
+/*********************************************************************************************************************
+* Implementation of `protocol::definition::visitor` class.
+*********************************************************************************************************************/
+  namespace detail {
+    
       template<size_t I, typename MT, typename EnableT = void>
       class protocol_visitor;
 
@@ -198,16 +226,22 @@ namespace tpl
   } /* namespace detail */
 
   /*!
-   * \brief Encapsulates the Message
-   *        
+   * \brief The `protocol` class associates a message protocol with an id-type, which can be any type which can be
+   *        used--either directly or via conversion--as a tuple-index and is deterministic at compile-time.
    *
-   * This 
+   *        This class provides the `definition` sub-class, which permits assignment of concrete `Message` definitions
+   *        that are used to implement serialization methods.
    */
   template<typename ET>
   class protocol
   {
     using message_id_type = ET;
   public:
+    /*!
+     * \brief The `Message` sub-class describes the data types which are stored in a message; it is used by the
+     *        serializer methods to pack message objects into their binary representations, which are stored in a 
+     *        standard string.
+     */
     template<message_id_type MessageTypeID, typename...MessageFieldTypes>
     class Message
     {

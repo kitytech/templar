@@ -58,7 +58,6 @@ int main()
   using protocol_class = tpl::protocol<MessageType>;
   using protocol_t = protocol_class::definition
     < protocol_class::Message<MessageType::SomeText, std::string>
-    //, protocol_class::Message<MessageType::DrawLine, short, int, unsigned, long>
     , protocol_class::Message<MessageType::DrawLine, short, int, long, uint8_t>
     , protocol_class::Message<MessageType::IsTrue,   bool>
     , protocol_class::Message<MessageType::GoldenTurd, std::string, bool>
